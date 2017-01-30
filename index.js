@@ -1,4 +1,4 @@
-var sunrays = selectAll('.sunray');
+var sunrays = selectAll('.js-sunray');
 
 /**
  * Animate sunrays
@@ -23,6 +23,21 @@ var sunrayAnimPart2 = anime({
   duration: 1800,
   easing: 'easeInExpo',
   complete: () => sunrayAnimPart1.play()
+});
+
+/**
+ * Space Probe
+ */
+var spaceProbe = select('#js-space-probe');
+var path = anime.path('#js-motion-path');
+
+var motionPath = anime({
+  targets: spaceProbe,
+  translateX: path('x'),
+  translateY: path('y'),
+  easing: 'easeInOutQuint',
+  duration: 20000,
+  loop: true
 });
 
 /**
