@@ -43,24 +43,10 @@ var motionPath = anime({
 /**
  * Launch Label
  */
-var launchLabel = selectAll('#js-launch-label .text');
-var launchLabelUnderline = selectAll('#js-launch-label .underline');
-
-anime({
-  targets: launchLabel,
-  opacity: [0, 1],
-  easing: 'easeInOutSine',
-  duration: 900
-});
-
-anime({
-  targets: launchLabelUnderline,
-  strokeDashoffset: [anime.setDashoffset, 0],
-  easing: 'easeInOutQuart',
-  duration: 600,
-  delay: 300
-});
-
+var launchLabels = selectAll('#js-launch-label .text');
+var launchLabelUnderlines = selectAll('#js-launch-label .underline');
+var { label: launchAnim, underline: launchUnderlinesAnim }
+  = makeLabelAnim(launchLabels, launchLabelUnderlines)
 
 /**
  * Utils
@@ -71,4 +57,23 @@ function select(query) {
 
 function selectAll(query) {
   return document.querySelectorAll(query);
+}
+
+function makeLabelAnim(labels, underlines) {
+  var labelAnim = anime({
+    targets: labels,
+    opacity: [0, 1],
+    easing: 'easeInSine',
+    duration: 900
+  });
+
+  var underlineAnim = anime({
+    targets: underlines,
+    strokeDashoffset: [anime.setDashoffset, 0],
+    easing: 'easeInOutQuart',
+    duration: 600,
+    delay: 300
+  });
+
+  return { label, underline };
 }
