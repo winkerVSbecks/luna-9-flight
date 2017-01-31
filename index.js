@@ -9,7 +9,7 @@ var sunrayAnimPart1 = anime({
   targets: sunrays,
   strokeDashoffset: [anime.setDashoffset, 0],
   delay: function(_, idx) { return idx * 60; },
-  duration: 1800,
+  duration: 800,
   easing: 'easeOutExpo',
   autoPlay: false,
   complete: () => sunrayAnimPart2.play()
@@ -20,7 +20,7 @@ var sunrayAnimPart2 = anime({
   targets: sunrays,
   strokeDashoffset: [0, (el) => -1 * anime.setDashoffset(el)],
   delay: function(_, idx) { return idx * 60; },
-  duration: 1800,
+  duration: 800,
   easing: 'easeInExpo',
   complete: () => sunrayAnimPart1.play()
 });
@@ -39,6 +39,28 @@ var motionPath = anime({
   duration: 20000,
   loop: true
 });
+
+/**
+ * Launch Label
+ */
+var launchLabel = selectAll('#js-launch-label .text');
+var launchLabelUnderline = selectAll('#js-launch-label .underline');
+
+anime({
+  targets: launchLabel,
+  opacity: [0, 1],
+  easing: 'easeInOutSine',
+  duration: 900
+});
+
+anime({
+  targets: launchLabelUnderline,
+  strokeDashoffset: [anime.setDashoffset, 0],
+  easing: 'easeInOutQuart',
+  duration: 600,
+  delay: 300
+});
+
 
 /**
  * Utils
