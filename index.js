@@ -1,7 +1,28 @@
-const canvas = select('#js-scene');
+/**
+ * Animate sunrays
+ */
 const sunrays = selectAll('.js-sunray');
-const title = selectAll('#js-title');
-const theRest = selectAll('#js-everything-except-title');
+const sunraysTimeline = anime.timeline({ loop: true });
+
+const sunrayAnimPart1 = anime({
+  targets: sunrays,
+  strokeDashoffset: [anime.setDashoffset, 0],
+  delay: function(_, idx) { return idx * 60; },
+  duration: 800,
+  easing: 'easeOutExpo',
+  autoPlay: false,
+  complete: () => sunrayAnimPart2.play()
+});
+sunrayAnimPart1.pause();
+
+const sunrayAnimPart2 = anime({
+  targets: sunrays,
+  strokeDashoffset: [0, (el) => -1 * anime.setDashoffset(el)],
+  delay: function(_, idx) { return idx * 60; },
+  duration: 800,
+  easing: 'easeInExpo',
+  complete: () => sunrayAnimPart1.play()
+});
 
 
 /**
@@ -28,13 +49,17 @@ const time = {
   boost: 17800,
   correction: 20700,
   landing: 31600,
-  fadeOut: 34000,
+  fadeOut: 38000,
 };
 
 
 /**
  * Scene
  */
+const canvas = select('#js-scene');
+const title = selectAll('#js-title');
+const theRest = selectAll('#js-everything-except-title');
+
 const scene = {
   fadeInScene: {
     targets: canvas,
@@ -49,17 +74,7 @@ const scene = {
     duration: 800,
     offset: time.fadeInTitle,
   },
-  fadeInRest: {
-    targets: theRest,
-    opacity: [0, 1],
-    translateY: {
-      value: ['25%', 0],
-      easing: 'easeOutSine',
-    },
-    easing: 'easeInOutQuint',
-    duration: 800,
-    offset: time.fadeInRest,
-  },
+  fadeInRest: makeFadeInUpAnim(theRest, time.fadeInRest),
   fadeOut: {
     targets: canvas,
     opacity: [1, 0],
@@ -88,30 +103,58 @@ const motionPath = {
 
 
 /**
- * Launch Label
+ * Labels
  */
+// Launch
 const launchLabels = selectAll('#js-launch-label .text');
 const launchLabelUnderlines = selectAll('#js-launch-label .underline');
 const launchAnim = makeFadeInAnim(launchLabels, time.launch);
 const launchUnderlinesAnim = makeLineAnim(launchLabelUnderlines, time.launch);
-
-
-/**
- * Boost Label
- */
+// Boost
 const boostLabels = selectAll('#js-boost-label .text');
 const boostLabelUnderlines = selectAll('#js-boost-label .underline');
 const boostAnim = makeFadeInAnim(boostLabels, time.boost);
 const boostUnderlinesAnim = makeLineAnim(boostLabelUnderlines, time.boost);
+// Correction
+const correctionLabel = select('#js-correction-label');
+const correctionAnim = makeFadeInUpAnim(correctionLabel, time.correction);
+// Landing
+const landingLabel = select('#js-landing-label');
+const landingAnim = makeFadeInUpAnim(landingLabel, time.landing);
 
 
 /**
  * Timeline
  */
+function audioTimeline() {
+  setTimeout(() => {
+    audio.bg.stop();
+    audio.bg.volume(0.75);
+    audio.bg.play();
+  }, 1500);
+  setTimeout(() => audio.wind.play(), time.fadeInTitle);
+  setTimeout(() => {
+    audio.launch.stop();
+    audio.launch.volume(1);
+    audio.launch.play();
+  }, time.launch);
+  setTimeout(() => audio.launch.fade(1, 0, 1000), time.launch + 7000);
+  setTimeout(() => audio.boost.play(), time.boost);
+  setTimeout(() => {
+    audio.correction.stop();
+    audio.correction.volume(1);
+    audio.correction.play();
+  }, time.correction);
+  setTimeout(() => audio.correction.fade(1, 0, 600), time.correction + 1000);
+  setTimeout(() => audio.bg.fade(0.5, 0, 1000), time.landing);
+  setTimeout(() => audio.land.play(), time.landing);
+}
+
 const sceneTimeline = anime.timeline({
-  loop: true,
+  // loop: true,
   autoplay: false,
   begin: audioTimeline,
+  complete: init,
 });
 
 sceneTimeline
@@ -123,54 +166,19 @@ sceneTimeline
   .add(launchUnderlinesAnim)
   .add(boostAnim)
   .add(boostUnderlinesAnim)
+  .add(correctionAnim)
+  .add(landingAnim)
   .add(scene.fadeOut);
-
-
-function audioTimeline() {
-  setTimeout(() => audio.bg.play(), 1500);
-  setTimeout(() => audio.wind.play(), time.fadeInTitle);
-  setTimeout(() => audio.launch.play(), time.launch);
-  setTimeout(() => audio.launch.fade(1, 0, 1000), time.launch + 7000);
-  setTimeout(() => audio.boost.play(), time.boost);
-  setTimeout(() => audio.correction.play(), time.correction);
-  setTimeout(() => audio.correction.fade(1, 0, 600), time.correction + 1000);
-  setTimeout(() => audio.bg.fade(0.5, 0, 1000), time.landing);
-  setTimeout(() => audio.land.play(), time.landing);
-}
-
-
-/**
- * Animate sunrays
- */
-const sunraysTimeline = anime.timeline({ loop: true });
-
-const sunrayAnimPart1 = anime({
-  targets: sunrays,
-  strokeDashoffset: [anime.setDashoffset, 0],
-  delay: function(_, idx) { return idx * 60; },
-  duration: 800,
-  easing: 'easeOutExpo',
-  autoPlay: false,
-  complete: () => sunrayAnimPart2.play()
-});
-sunrayAnimPart1.pause();
-
-const sunrayAnimPart2 = anime({
-  targets: sunrays,
-  strokeDashoffset: [0, (el) => -1 * anime.setDashoffset(el)],
-  delay: function(_, idx) { return idx * 60; },
-  duration: 800,
-  easing: 'easeInExpo',
-  complete: () => sunrayAnimPart1.play()
-});
 
 
 /**
  * Init
  */
-window.onload = function() {
-  sceneTimeline.play();
-};
+function init() {
+  sceneTimeline.restart();
+  // audioTimeline();
+}
+window.onload = init;
 
 /**
  * Utils
@@ -189,7 +197,7 @@ function makeFadeInAnim(targets, offset) {
     opacity: [0, 1],
     easing: 'easeInSine',
     duration: 900,
-    offset
+    offset,
   };
 }
 
@@ -200,6 +208,20 @@ function makeLineAnim(targets, offset) {
     easing: 'easeInOutQuart',
     duration: 600,
     delay: 300,
-    offset
+    offset,
+  };
+}
+
+function makeFadeInUpAnim(targets, offset) {
+  return {
+    targets,
+    opacity: [0, 1],
+    translateY: {
+      value: ['25%', 0],
+      easing: 'easeOutSine',
+    },
+    easing: 'easeInOutQuint',
+    duration: 800,
+    offset,
   };
 }
