@@ -47,7 +47,7 @@ const time = {
   probe: 5000,
   launch: 5400,
   boost: 17800,
-  correction: 20700,
+  correction: 20400,
   landing: 31600,
   fadeOut: 38000,
 };
@@ -98,7 +98,14 @@ const motionPath = {
   easing: 'easeInOutQuint',
   duration: 30000,
   offset: time.probe,
-  autoplay: false,
+};
+
+const motionTrail = {
+  targets: select('#js-motion-path'),
+  strokeDashoffset: [anime.setDashoffset, 0],
+  easing: 'easeInOutQuint',
+  duration: 30000,
+  offset: time.probe,
 };
 
 
@@ -151,7 +158,6 @@ function audioTimeline() {
 }
 
 const sceneTimeline = anime.timeline({
-  // loop: true,
   autoplay: false,
   begin: audioTimeline,
   complete: init,
@@ -162,6 +168,7 @@ sceneTimeline
   .add(scene.fadeInTitle)
   .add(scene.fadeInRest)
   .add(motionPath)
+  // .add(motionTrail)
   .add(launchAnim)
   .add(launchUnderlinesAnim)
   .add(boostAnim)
