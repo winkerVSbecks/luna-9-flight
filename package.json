@@ -1,0 +1,25 @@
+{
+  "name": "luna-9-flight",
+  "version": "1.0.0",
+  "description": "🚀🌘",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel js/index.es6.js --out-file js/index.js --presets=latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/winkerVSbecks/luna-9-flight.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/winkerVSbecks/luna-9-flight/issues"
+  },
+  "homepage": "https://github.com/winkerVSbecks/luna-9-flight#readme",
+  "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-preset-latest": "^6.22.0"
+  }
+}
